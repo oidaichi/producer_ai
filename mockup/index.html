@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONDO イベントプランニングツール</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans JP', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --secondary: #6B7280;
+            --success: #10B981;
+        }
+
+        /* Markdown styling */
+        .markdown-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .markdown-content h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content ul {
+            list-style-type: disc;
+            padding-left: 1.25rem;
+            margin: 0.75rem 0;
+        }
+        
+        .markdown-content li {
+            margin-bottom: 0.25rem;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        .markdown-content strong {
+            font-weight: 600;
+        }
+        
+        .markdown-content a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 1rem;
+        }
+        
+        /* タブのスタイル */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* タブのアクティブ状態 */
+        .tab-button.active {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+        .sidebar {
+            width: 250px;
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
+        .main-content {
+            transition: all 0.3s;
+            width: calc(100% - 250px);
+        }
+        .main-content.expanded {
+            width: 100%;
+        }
+        .nav-link {
+            @apply flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors;
+        }
+        .nav-link.active {
+            @apply bg-primary-100 text-primary-700 font-medium;
+        }
+        .btn-primary {
+            @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors;
+        }
+        .btn-outline {
+            @apply border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors;
+        }
+        .card {
+            @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+    <!-- サイドバー -->
+    <div class="sidebar bg-white border-r border-gray-200 h-screen fixed flex flex-col">
+        <div class="p-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-primary-700">ONDO</h1>
+            <p class="text-sm text-gray-500">イベントプランニングツール</p>
+        </div>
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">最近のプロジェクト</h3>
+            <div class="space-y-1">
+                <a href="#" class="nav-link active">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    サマーフェスティバル2025
+                </a>
+                <a href="#" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    テックカンファレンス2025
+                </a>
+                <a href="#" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    新商品発表会2025
+                </a>
+            </div>
+        </div>
+        <div class="p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">プロンプトテンプレート</h3>
+            <div class="space-y-1">
+                <a href="prompt-templates.html" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    基本プロンプト
+                </a>
+                <a href="prompt-templates.html" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    大規模イベント用
+                </a>
+                <a href="prompt-templates.html" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    カンファレンス用
+                </a>
+                <a href="prompt-templates.html" class="nav-link">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    新規テンプレート
+                </a>
+            </div>
+        </div>
+            <a href="#" class="nav-link">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                設定
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium">Y</div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium">山田 太郎</p>
+                    <p class="text-xs text-gray-500">プロデューサー</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-content ml-[250px] flex-1 p-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">新しいプロジェクトを作成</h2>
+                <p class="text-gray-600">イベントの基本情報を入力してください</p>
+            </div>
+            <div class="flex space-x-3">
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="mr-2">テンプレート:</span>
+                    <span class="font-medium text-primary-600">基本プロンプト</span>
+                </div>
+                <a href="#" class="btn-outline flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    スプシに移動
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="md:col-span-2 space-y-6">
+                <!-- 基本情報カード -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">基本情報</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">イベント名</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="例: サマーフェスティバル2025">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">開催日時</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">想定来場者数</label>
+                                <div class="relative">
+                                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10" placeholder="500">
+                                    <span class="absolute right-3 top-2.5 text-gray-500">名</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">プロジェクトメンバー人数</label>
+                            <div class="relative max-w-xs">
+                                <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10" placeholder="10">
+                                <span class="absolute right-3 top-2.5 text-gray-500">名</span>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">この人数を元にスケジュールを作成します。</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">イベント種別</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <option value="">選択してください</option>
+                                <option value="music">音楽フェスティバル</option>
+                                <option value="conference">カンファレンス</option>
+                                <option value="exhibition">展示会</option>
+                                <option value="seminar">セミナー</option>
+                                <option value="other">その他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">イベント概要</label>
+                            <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="イベントの目的やコンセプトを入力してください"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- イベント詳細入力カード -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">イベント詳細</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">開催場所</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="例: 東京国際フォーラム">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">主催者情報</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="例: 株式会社ONDO">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">対象者属性</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="例: 20-30代の音楽ファン、学生、デザイナー、スタートアップ経営者">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI生成ボタン -->
+                <div class="card bg-primary-50 border-primary-200">
+                    <h3 class="text-lg font-semibold mb-4 text-primary-800">AIによる資料自動作成</h3>
+                    <p class="text-sm text-gray-600 mb-4">入力された情報を元に、以下の資料を自動生成します</p>
+                    
+                    <div class="space-y-4 mb-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">検索オプション</h4>
+                            <div class="space-y-2 pl-2">
+                                <label class="flex items-start">
+                                    <input type="checkbox" id="search-venue" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">会場情報を検索する</span>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="checkbox" id="search-municipality" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">自治体情報を検索する</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 my-2"></div>
+                        
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">作成する資料</h4>
+                            <div class="space-y-2 pl-2">
+                                <label class="flex items-start">
+                                    <input type="checkbox" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">タスク一覧</span>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="checkbox" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">必要役割一覧</span>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="checkbox" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">お打ち合わせフロー</span>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="checkbox" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">プロジェクトスケジュール</span>
+                                </label>
+                                <label class="flex items-start">
+                                    <input type="checkbox" class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">予算表</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="doc-generation-buttons">
+                        <button id="generate-docs" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center transition-colors mb-3">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            資料を生成する
+                        </button>
+                        <button id="move-to-spreadsheet" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center transition-colors hidden">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            スプレッドシートに移動する
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 検索結果セクションはフォームの下に移動 -->
+            <div class="md:col-span-3">
+                <!-- タブナビゲーション -->
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <button id="venue-tab" class="border-b-2 border-blue-500 text-blue-600 whitespace-nowrap py-4 px-4 text-sm font-medium">
+                            会場情報
+                        </button>
+                        <button id="municipality-tab" class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-4 text-sm font-medium">
+                            自治体情報
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- タブコンテンツ -->
+                <div class="mt-4">
+                    <!-- 会場情報タブ -->
+                    <div id="venue-tab-content" class="tab-content active">
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">会場情報検索結果</h3>
+                            </div>
+                            <div id="venue-search-results" class="text-sm text-gray-500">
+                                「会場情報を検索する」にチェックを入れて「資料を生成する」をクリックすると、会場情報の検索が実行されます。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 自治体情報タブ -->
+                    <div id="municipality-tab-content" class="tab-content hidden">
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">自治体情報検索結果</h3>
+                            </div>
+                            <div id="municipality-search-results" class="text-sm text-gray-500">
+                                「自治体情報を検索する」にチェックを入れて「資料を生成する」をクリックすると、自治体情報の検索が実行されます。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // サイドバーのトグル機能とタブ切り替え
+        document.addEventListener('DOMContentLoaded', function() {
+            // タブ切り替え機能
+            const venueTab = document.getElementById('venue-tab');
+            const municipalityTab = document.getElementById('municipality-tab');
+            const venueContent = document.getElementById('venue-tab-content');
+            const municipalityContent = document.getElementById('municipality-tab-content');
+            
+            if (venueTab && municipalityTab && venueContent && municipalityContent) {
+                // 会場情報タブをクリックしたときの処理
+                venueTab.addEventListener('click', function() {
+                    // タブの見た目を更新
+                    venueTab.classList.add('border-blue-500', 'text-blue-600');
+                    venueTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    
+                    municipalityTab.classList.remove('border-blue-500', 'text-blue-600');
+                    municipalityTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    
+                    // コンテンツの表示を切り替え
+                    venueContent.classList.remove('hidden');
+                    venueContent.classList.add('active');
+                    municipalityContent.classList.add('hidden');
+                    municipalityContent.classList.remove('active');
+                });
+                
+                // 自治体情報タブをクリックしたときの処理
+                municipalityTab.addEventListener('click', function() {
+                    // タブの見た目を更新
+                    municipalityTab.classList.add('border-blue-500', 'text-blue-600');
+                    municipalityTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    
+                    venueTab.classList.remove('border-blue-500', 'text-blue-600');
+                    venueTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    
+                    // コンテンツの表示を切り替え
+                    municipalityContent.classList.remove('hidden');
+                    municipalityContent.classList.add('active');
+                    venueContent.classList.add('hidden');
+                    venueContent.classList.remove('active');
+                });
+            }
+            console.log('ONDO Event Planning Tool is ready!');
+            
+            // 会場情報検索結果のマークダウン形式テンプレート
+            function createVenueSearchResult() {
+                return `
+# 東京国際フォーラム 会場情報
+
+## 所在地とアクセス
+- **住所**: 東京都千代田区丸の内3-5-1
+- **最寄り駅**: JR山手線・京浜東北線「有楽町駅」徒歩1分
+- **駐車場**: 500台（有料、要予約）
+- **案内表示**: 主要駅から会場まで案内表示あり
+
+## 利用可能時間
+- **通常利用**: 7:00〜22:00
+- **延長利用**: 要別途申請（最大24:00まで）
+- **準備・片付け**: イベント前後2時間まで
+
+## 音響システム
+- **マイク**: ワイヤレスハンドマイク（10本）
+- **スピーカー**: メイン2基、サテライト4基
+- **音量制限**: 22:00以降は85dB以下
+
+## 映像機器
+- **プロジェクター**: 10,000ルーメン（2台）
+- **スクリーン**: 200インチ（2面）
+- **配線**: HDMI/VGA/DisplayPort対応
+
+## キッチンスペース
+- **設備**: 冷蔵庫2台、電子レンジ1台
+- **調理**: 不可（仕出しのみ可）
+- **ゴミ処理**: 分別回収が義務（有料）
+
+## サポートスタッフ
+- **受付**: 2名（追加1名5,000円/時間）
+- **案内**: 1階エントランス常駐（2名）
+- **警備**: 常駐2名（追加1名3,000円/時間）
+
+*最終確認日: 2025年8月20日*
+                `;
+            }
+
+            // 自治体情報検索結果のマークダウン形式テンプレート
+            function createMunicipalitySearchResult() {
+                return `
+# 千代田区 イベント開催規制・ガイドライン
+
+## 消防法対応手続き
+- **申請要否**: 100名以上のイベントは要申請
+- **申請期限**: イベント30日前まで
+- **必要な書類**:
+  - 防火管理者選任届
+  - 消防計画書
+  - 避難経路図
+  - 消火設備配置図
+- **審査期間**: 提出後7営業日程度
+
+## 緊急連絡先
+- **千代田区役所 イベント係**
+  - 電話: 03-5211-1111（平日8:30-17:00）
+  - 緊急時: 090-1234-5678（24時間対応）
+  - メール: event@city.chiyoda.lg.jp
+
+## 交通誘導人員の配置
+- **必要人数の目安**:
+  - 参加者100名未満: 1名以上
+  - 100〜500名: 2名以上
+  - 500名以上: 3名以上（500名増えるごとに1名追加）
+- **資格要件**: 警備業法に基づく交通誘導業務検定資格者
+- **配置時間**: イベント開始1時間前から終了後30分まで
+
+## その他の規制
+- **騒音規制**:
+  - 昼間（7:00-20:00）: 70dB以下
+  - 夜間（20:00-22:00）: 65dB以下
+  - 深夜（22:00-7:00）: 60dB以下（原則禁止）
+
+- **ゴミ処理**:
+  - イベント終了後の完全撤去が義務付け
+  - 分別回収（燃えるゴミ・ビン・カン・ペットボトル・プラスチック）
+  - 産業廃棄物は専門業者に依頼が必要
+
+*最終確認日: 2025年8月20日*
+                `;
+            }
+
+            // スプシに移動する処理
+            function moveToSpreadsheet() {
+                // ここにスプレッドシートへのリダイレクト処理を実装
+                alert('スプレッドシートに移動します。');
+                // 実際の実装では、Google SpreadsheetのURLにリダイレクト
+                // window.location.href = 'YOUR_SPREADSHEET_URL';
+            }
+
+            // シンプルなマークダウンをHTMLに変換する関数
+            function renderMarkdown(markdown) {
+                // 見出しの変換
+                let html = markdown
+                    .replace(/^### (.*$)/gm, '<h3 class="font-medium text-lg text-gray-800 mb-2">$1</h3>')
+                    .replace(/^## (.*$)/gm, '<h2 class="font-semibold text-xl text-gray-800 mb-3 mt-4">$1</h2>')
+                    .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b">$1</h1>');
+                
+                // リストの変換
+                html = html.replace(/^\s*[-*+] (.*$)/gm, '<li class="text-sm text-gray-700 mb-1">$1</li>');
+                
+                // 太字の変換
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // リンクの変換
+                html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="text-blue-600 hover:underline">$1</a>');
+                
+                // 改行を<br>に変換
+                html = html.replace(/\n\n/g, '<br>');
+                
+                return html;
+            }
+
+            // 検索実行処理
+            const generateButton = document.getElementById('generate-docs');
+            const moveToSpreadsheetBtn = document.getElementById('move-to-spreadsheet');
+            
+            if (moveToSpreadsheetBtn) {
+                moveToSpreadsheetBtn.addEventListener('click', moveToSpreadsheet);
+            }
+            
+            if (generateButton) {
+                generateButton.addEventListener('click', function() {
+                    const searchVenue = document.getElementById('search-venue');
+                    const searchMunicipality = document.getElementById('search-municipality');
+                    const venueResults = document.getElementById('venue-search-results');
+                    const municipalityResults = document.getElementById('municipality-search-results');
+                    
+                    // ローディング表示
+                    const loadingHTML = `
+                        <div class="flex items-center justify-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-2 text-gray-600">検索中...</span>
+                        </div>
+                    `;
+
+                    // チェックボックスの状態に応じて検索を実行
+                    if (searchVenue && searchVenue.checked && venueResults) {
+                        // ローディング表示
+                        venueResults.innerHTML = loadingHTML;
+                        
+                        // 模擬検索の遅延処理
+                        setTimeout(() => {
+                            const markdown = createVenueSearchResult();
+                            venueResults.innerHTML = `
+                                <div class="p-4 bg-white rounded-lg border border-gray-200 markdown-content">
+                                    ${renderMarkdown(markdown)}
+                                </div>
+                            `;
+                        }, 1500);
+                    }
+
+                    if (searchMunicipality && searchMunicipality.checked && municipalityResults) {
+                        // ローディング表示
+                        municipalityResults.innerHTML = loadingHTML;
+                        
+                        // 模擬検索の遅延処理
+                        setTimeout(() => {
+                            const markdown = createMunicipalitySearchResult();
+                            municipalityResults.innerHTML = `
+                                <div class="p-4 bg-white rounded-lg border border-gray-200 markdown-content">
+                                    ${renderMarkdown(markdown)}
+                                </div>
+                            `;
+                        }, 2000);
+                    }
+
+                    // チェックが外されている場合はメッセージを表示
+                    if (searchVenue && !searchVenue.checked && venueResults) {
+                        venueResults.innerHTML = '<p class="text-gray-500 text-sm">「会場情報を検索する」にチェックを入れて「資料を生成する」をクリックすると、会場情報の検索が実行されます。</p>';
+                    }
+                    
+                    if (searchMunicipality && !searchMunicipality.checked && municipalityResults) {
+                        municipalityResults.innerHTML = '<p class="text-gray-500 text-sm">「自治体情報を検索する」にチェックを入れて「資料を生成する」をクリックすると、自治体情報の検索が実行されます。</p>';
+                    }
+                    
+                    // スプレッドシートに移動するボタンを表示
+                    if (moveToSpreadsheetBtn) {
+                        moveToSpreadsheetBtn.classList.remove('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
