@@ -111,106 +111,207 @@
     <div class="main-content ml-64 flex-1 p-8">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">プロンプトテンプレート</h2>
-            <button class="btn btn-primary flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                新規テンプレート
-            </button>
         </div>
 
-        <!-- 現在のテンプレート -->
-        <div class="card mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">現在のテンプレート</h3>
-                <div class="flex space-x-2">
-                    <button class="btn btn-outline text-sm px-3 py-1">編集</button>
-                    <button class="btn btn-outline text-sm px-3 py-1">複製</button>
-                    <button class="btn btn-outline text-sm px-3 py-1 text-red-600 hover:bg-red-50">削除</button>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <!-- タブナビゲーション -->
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button class="tab-button active border-b-2 border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 text-sm font-medium" data-tab="venue">
+                        会場情報検索
+                    </button>
+                    <button class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium" data-tab="municipality">
+                        自治体情報検索
+                    </button>
+                    <button class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium" data-tab="schedule">
+                        タスク・スケジュール作成
+                    </button>
+                </nav>
+            </div>
+
+            <!-- 会場情報検索タブ -->
+            <div id="venue-tab" class="tab-content py-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium">会場情報検索とチェックリスト作成</h3>
+                    <div class="flex space-x-2">
+                        <button class="edit-prompt px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700" data-prompt-type="venue">
+                            編集
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <div class="prompt-content text-sm whitespace-pre-line">
+                        # プロンプト① 会場情報検索とチェックリスト作成
+                        あなたはイベント運営支援のアシスタントです。
+                        以下の入力情報を受け取り、開催場所に関する **公式サイトや一次情報** をWeb検索で収集し、会場情報チェックリストを完成させてください。
+                        出力は **Markdownの表** と **CSV** の両方で作成してください。
+                        余計な説明は不要です。事実ベースで、回答＋根拠URL＋根拠抜粋を必ずセットにしてください。
+                        
+                        # 入力情報
+                        イベント名: {{イベント名}}
+                        開催日時: {{開催日時}}
+                        開催場所: {{開催場所}}
+                        想定来場者数: {{想定来場者数}}人
+                        イベント種別: {{イベント種別}}
+                        イベント概要: {{イベント概要}}
+                        対象者: {{対象者}}
+                        対象者属性: {{対象者属性}}
+                        主催者情報: {{主催者情報}}
+                        プロジェクトメンバー人数: {{人数}}
+                        
+                        # 出力要件
+                        1. 会場情報チェックリスト  
+                           - カテゴリ/確認事項/回答/根拠URL/根拠抜粋/備考  
+                           - 下記テンプレ全項目を網羅  
+                           - 一次情報（公式サイト/PDF/利用規約/フロアマップ）を最優先  
+                           - 見つからない場合は「要確認」とし、問い合わせ窓口URLを付す  
+                           - 数値は必ず単位つき（㎡, 名, V/A, ¥）  
+                        
+                        ## テンプレ項目
+                        - 所在地とアクセス（交通機関、駐車場、案内表示）
+                        - 会場建物の利用可能時間
+                        - 収容人数、面積、レイアウト（座席配置、図面）
+                        - 控室の有無、喫煙場所
+                        - 搬入搬出の申請/経路/車両キャパ上限
+                        - 電源容量（容量、数、場所）
+                        - インターネット設備（Wi-Fi/有線LAN）
+                        - 音響・映像・照明設備
+                        - ケータリング持込可否
+                        - 清掃・ゴミ処理方法
+                        - 避難経路・緊急設備（AED）
+                        - 契約・料金・キャンセルポリシー
+                        - 支払い条件
+                        - ステージサイズ
+                        - クローク環境 など
+                        
+                        # 出力形式
+                        ## 会場情報チェックリスト（Markdown表）
+                        | カテゴリ | 確認事項 | 回答 | 根拠URL | 根拠抜粋 | 備考 |
+                        |----------|----------|------|---------|----------|------|
+                        
+                        ## CSV
+                        "カテゴリ","確認事項","回答","根拠URL","根拠抜粋","備考"
+                    </div>
                 </div>
             </div>
-            <div class="bg-gray-50 p-4 rounded-md mb-4">
-                <h4 class="font-medium text-gray-800 mb-2">基本プロンプト</h4>
-                <p class="text-sm text-gray-600 mb-4">イベントの基本的な情報を元に、ガントチャートやタスクリストを生成するためのプロンプトテンプレートです。</p>
-                <div class="bg-white p-4 rounded border border-gray-200 font-mono text-sm">
-                    <p>以下のイベント情報を元に、詳細なガントチャートとタスクリストを作成してください。</p><br>
-                    <p>イベント名: {{イベント名}}</p>
-                    <p>開催日時: {{開催日時}}</p>
-                    <p>想定来場者数: {{想定来場者数}}人</p>
-                    <p>イベント種別: {{イベント種別}}</p>
-                    <p>イベント概要: {{イベント概要}}</p>
-                    <p>対象者: {{対象者}}</p><br>
-                    <p>以下の項目を含む詳細なガントチャートとタスクリストを生成してください：</p>
-                    <ol class="list-decimal pl-5 mt-2 space-y-1">
-                        <li>全体のタイムライン</li>
-                        <li>各タスクの開始日と終了日</li>
-                        <li>担当者割り当て</li>
-                        <li>依存関係のあるタスク</li>
-                        <li>マイルストーン</li>
-                    </ol>
+
+            <!-- 自治体情報検索タブ -->
+            <div id="municipality-tab" class="tab-content py-4 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium">自治体情報検索と対応事項一覧化</h3>
+                    <div class="flex space-x-2">
+                        <button class="edit-prompt px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700" data-prompt-type="municipality">
+                            編集
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <div class="prompt-content text-sm whitespace-pre-line">
+                        # プロンプト② 自治体情報検索と対応事項一覧化
+                        あなたはイベント運営支援のアシスタントです。
+                        以下の入力情報を受け取り、開催場所の自治体の公式サイトや関連法規を検索し、必要な対応事項を一覧化してください。
+                        
+                        # 入力情報
+                        イベント名: {{イベント名}}
+                        開催日時: {{開催日時}}
+                        開催場所: {{開催場所}}
+                        想定来場者数: {{想定来場者数}}人
+                        イベント種別: {{イベント種別}}
+                        
+                        # 出力要件
+                        1. 自治体関連の届出・対応事項リスト  
+                        - カテゴリ/確認事項/対応内容/根拠URL/根拠抜粋/備考  
+                        - 例: 消防届出、道路使用許可、警察署への届出、音楽イベント時の騒音規制、飲食提供許可、感染症対策指針、廃棄物処理など  
+                        - 一次情報（自治体公式サイト、所轄官庁ページ、条例PDF）を必ず優先  
+                        - 不明確な場合は「要確認」とし、問い合わせ窓口のリンクを提示  
+
+                        # 出力形式
+                        ## 自治体情報一覧（Markdown表）
+                        | カテゴリ | 確認事項 | 対応内容 | 根拠URL | 根拠抜粋 | 備考 |
+                        |---|---|---|---|---|---|
+
+                        ## CSV
+                        "カテゴリ","確認事項","対応内容","根拠URL","根拠抜粋","備考"
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- テンプレート一覧 -->
-        <div class="card">
-            <h3 class="text-lg font-semibold mb-4">テンプレート一覧</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- テンプレートカード 1 -->
-                <div class="template-card">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-medium text-gray-800">大規模イベント用</h4>
-                        <div class="flex space-x-1">
-                            <button class="text-gray-400 hover:text-blue-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                            <button class="text-gray-400 hover:text-blue-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </button>
-                            <button class="text-gray-400 hover:text-red-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-3">大規模なイベント向けの詳細なプロンプトテンプレートです。複数日間にわたるイベントや大規模なスタッフ編成に対応しています。</p>
-                    <div class="text-right">
-                        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">このテンプレートを使用</button>
+            
+            <!-- タスク・スケジュール作成タブ -->
+            <div id="schedule-tab" class="tab-content py-4 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium">タスク・役割・スケジュール・予算作成</h3>
+                    <div class="flex space-x-2">
+                        <button class="edit-prompt px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700" data-prompt-type="schedule">
+                            編集
+                        </button>
                     </div>
                 </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <div class="prompt-content text-sm whitespace-pre-line">
+                        # プロンプト③ タスク・役割・スケジュール・予算作成
+                        あなたはイベント運営支援のアシスタントです。  
+                        以下の入力情報と、プロンプト①（会場情報チェックリスト）・プロンプト②（自治体情報一覧）の結果をもとに、  
+                        **現実的かつ実務で使えるプロジェクト計画資料** を作成してください。  
 
-                <!-- テンプレートカード 2 -->
-                <div class="template-card">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-medium text-gray-800">カンファレンス用</h4>
-                        <div class="flex space-x-1">
-                            <button class="text-gray-400 hover:text-blue-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                            <button class="text-gray-400 hover:text-blue-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </button>
-                            <button class="text-gray-400 hover:text-red-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-3">カンファレンスやセミナー向けのプロンプトテンプレートです。セッション管理やスピーカー対応を考慮した構成です。</p>
-                    <div class="text-right">
-                        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">このテンプレートを使用</button>
+                        # 入力情報
+                        イベント名: {{イベント名}}
+                        開催日時: {{開催日時}}
+                        開催場所: {{開催場所}}
+                        想定来場者数: {{想定来場者数}}人
+                        イベント種別: {{イベント種別}}
+                        イベント概要: {{イベント概要}}
+                        対象者: {{対象者}}
+                        対象者属性: {{対象者属性}}
+                        主催者情報: {{主催者情報}}
+                        プロジェクトメンバー人数: {{人数}}
+
+                        会場情報: <<<プロンプト①の出力>>>
+                        自治体情報: <<<プロンプト②の出力>>>
+
+                        # 出力要件
+                        1. **タスク一覧**  
+                        - No/タスク名/具体的説明/成果物/担当者/依存関係/期限  
+                        - 会場情報・自治体対応をタスクに必ず反映  
+                        - 過去事例のタスク体系（1-1, 1-2…）を参考に詳細分解  
+
+                        2. **必要役割一覧**  
+                        - 役割名/担当範囲/人数/スキル要件  
+                        - 例: プロデューサー、広報、会場担当、法務確認、スポンサー営業、受付など  
+
+                        3. **お打ち合わせフロー**  
+                        - フェーズごとに「関係者/目的/議題/成果物/タイミング」を一覧化  
+
+                        4. **プロジェクトスケジュール（ガントチャート）**  
+                        - No/タスク名/開始日/終了日/担当者/依存関係/マイルストーン  
+                        - 開催日から逆算、祝日を考慮し、担当者の同時並行数が「{{人数}}」を超えないよう調整  
+
+                        5. **予算表**  
+                        - 項目/想定費用/根拠/備考  
+                        - 会場費・備品費・広告宣伝費・人件費・ケータリング・警備・保険・雑費など  
+
+                        # 出力形式
+                        ## タスク一覧（Markdown表）
+                        | No | タスク名 | 具体的説明 | 成果物 | 担当者 | 依存関係 | 期限 |
+                        |---|---|---|---|---|---|---|
+
+                        ## 必要役割一覧（Markdown表）
+                        | 役割名 | 担当範囲 | 必要人数 | スキル要件 |
+                        |---|---|---|---|
+
+                        ## お打ち合わせフロー（Markdown表）
+                        | フェーズ | 関係者 | 目的 | 議題 | 成果物 | タイミング |
+                        |---|---|---|---|---|---|
+
+                        ## プロジェクトスケジュール（Markdown表）
+                        | No | タスク名 | 開始日 | 終了日 | 担当者 | 依存関係 | マイルストーン |
+                        |---|---|---|---|---|---|---|
+
+                        ## 予算表（Markdown表）
+                        | 項目 | 想定費用 | 根拠 | 備考 |
+                        |---|---|---|---|
+
+                        ## CSV（タスク・役割・スケジュール・予算それぞれ出力）
+
                     </div>
                 </div>
             </div>
@@ -231,6 +332,80 @@
                     c.classList.remove('active');
                 });
                 card.classList.add('active');
+            });
+        });
+
+        // タブの切り替え機能
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const tabId = e.target.getAttribute('data-tab');
+                
+                // アクティブなタブボタンのスタイルを更新
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('border-blue-500', 'text-blue-600');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+                e.target.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                e.target.classList.add('border-blue-500', 'text-blue-600');
+                
+                // タブコンテンツの表示/非表示を切り替え
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+            });
+        });
+
+        // 編集ボタンの機能
+        document.querySelectorAll('.edit-prompt').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const promptType = e.target.getAttribute('data-prompt-type');
+                const promptContent = document.querySelector(`#${promptType}-tab .prompt-content`);
+                const currentContent = promptContent.textContent.trim();
+                
+                // テキストエリアを作成して編集可能に
+                const textarea = document.createElement('textarea');
+                textarea.className = 'w-full h-96 p-2 border rounded';
+                textarea.value = currentContent;
+                
+                // 保存ボタンを作成
+                const saveButton = document.createElement('button');
+                saveButton.className = 'mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600';
+                saveButton.textContent = '保存';
+                
+                // キャンセルボタンを作成
+                const cancelButton = document.createElement('button');
+                cancelButton.className = 'mt-2 ml-2 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400';
+                cancelButton.textContent = 'キャンセル';
+                
+                // ボタンコンテナを作成
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'mt-2';
+                buttonContainer.appendChild(saveButton);
+                buttonContainer.appendChild(cancelButton);
+                
+                // 元のコンテンツを退避
+                const originalContent = promptContent.innerHTML;
+                
+                // 編集用UIに置き換え
+                promptContent.innerHTML = '';
+                promptContent.appendChild(textarea);
+                promptContent.appendChild(buttonContainer);
+                
+                // 保存ボタンの処理
+                saveButton.addEventListener('click', () => {
+                    // ここでサーバーに保存する処理を実装
+                    // 例: savePrompt(promptType, textarea.value);
+                    
+                    // 編集を終了して元の表示に戻す
+                    promptContent.textContent = textarea.value;
+                });
+                
+                // キャンセルボタンの処理
+                cancelButton.addEventListener('click', () => {
+                    // 編集をキャンセルして元の表示に戻す
+                    promptContent.innerHTML = originalContent;
+                });
             });
         });
     </script>
