@@ -1,9 +1,13 @@
 # Dependencies
 node_modules/
+/node_modules
+/.pnp
+.pnp.js
 
 # Build files
 dist/
 build/
+/build
 
 # Environment variables
 .env
@@ -11,6 +15,7 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local
 
 # Logs
 logs
@@ -36,3 +41,20 @@ yarn-error.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Next.js
+/.next/
+/out/
+
+# Testing
+/coverage
+
+# Misc
+*.pem
